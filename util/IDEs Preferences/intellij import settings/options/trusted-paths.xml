@@ -1,0 +1,29 @@
+<application>
+  <component name="Trusted.Paths">
+    <option name="TRUSTED_PROJECT_PATHS">
+      <map>
+        <entry key="C:\Users\016828631\Documents\Git Repo\DanielJava\profilemanager" value="true" />
+        <entry key="C:\Users\016828631\Documents\Git Repo\GIP\gip-api" value="true" />
+        <entry key="C:\Users\016828631\Documents\Git Repo\bcss\micronaut.back" value="true" />
+        <entry key="C:\Users\016828631\Documents\Git Repo\micropizzeria\micropizzeria\marketplace" value="true" />
+        <entry key="C:\Users\bmv3\repo\ErroJVM\demo" value="true" />
+        <entry key="C:\Users\bmv3\repo\GipIntegracoes" value="true" />
+        <entry key="C:\Users\bmv3\repo\zedt-gip-api" value="true" />
+        <entry key="C:\Users\bmv3\repo\zedt-gip-jobs" value="true" />
+        <entry key="C:\repo\GIP\gip-api" value="true" />
+        <entry key="C:\repo\GIP_github\zedt-gip-api" value="true" />
+      </map>
+    </option>
+  </component>
+  <component name="Trusted.Paths.Settings">
+    <option name="TRUSTED_PATHS">
+      <list>
+        <option value="C:\Users\016828631\Documents\Git Repo\bcss" />
+        <option value="C:\Users\016828631\Documents\Git Repo\GIP" />
+        <option value="C:\repo\GIP" />
+        <option value="C:\repo\GIP_github" />
+        <option value="C:\Users\bmv3\repo" />
+      </list>
+    </option>
+  </component>
+</application>

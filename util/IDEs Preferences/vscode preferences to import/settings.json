@@ -1,0 +1,78 @@
+{
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "liveshare.shareExternalFiles": false,
+    "liveshare.anonymousGuestApproval": "reject",
+    "liveshare.autoShareServers": false,
+    "liveshare.autoShareTerminals": false,
+    "liveshare.connectionMode": "relay",
+    "liveshare.increasedGuestLimit": false,
+    "liveshare.joinDebugSessionOption": "Prompt",
+    "liveshare.openSharedServers": false,
+    "liveshare.showReadOnlyUsersInEditor": "always",
+    "liveshare.authenticationProvider": "Microsoft",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "git.autofetch": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "github.copilot.editor.enableAutoCompletions": true,
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "files.autoSave": "afterDelay",
+    "git.confirmSync": false,
+    "todohighlight.defaultStyle": {
+        
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.iconTheme": "helium-icon-theme",
+    "workbench.colorCustomizations": {
+        "sideBar.background": "#1E1E1E", // fundo da sidebar
+        "sideBar.foreground": "#e0e0e0", // cor dos ícones/textos
+        "sideBar.hoverBackground": "#3A3A3A", // cor ao passar o mouse (hover)
+        "list.hoverBackground": "#1a5ab9a9", // fundo ao passar mouse nos itens da lista
+        "activityBar.foreground": "#4da7fc",  // Cor dos ícones da barra
+        "activityBar.activeBorder": "#b317fcd3", // Cor da borda ativa do ícone
+        "activityBarBadge.background": "#FF4500", // Cor do badge de notificações
+        "activityBar.hoverBackground": "#5A5A5A", // Cor de hover no ícone
+        "activityBar.dropBackground": "#3A3A3A", // Cor ao arrastar o ícone
+        "tab.activeBorderTop": "#b317fcd3", // Cor da borda superior da aba ativa
+        "statusBar.background": "#6c0d97a6", // Cor de fundo da barra de status
+        "statusBar.foreground": "#FFFFFF", // Cor do texto na barra de status
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "oracledevtools.connectionConfiguration.configFilesFolder": "C:\\Users\\bmv3\\Oracle\\network\\admin",
+    "[oraclesql]": {
+        "editor.suggest.showSnippets": true,
+        "editor.quickSuggestions": {
+            "comments": "on",
+            "strings": "on",
+            "other": "on"
+        }
+    },
+    "oracledevtools.connectionConfiguration.walletFileFolder": "C:\\Users\\bmv3\\Oracle\\network\\admin",
+    "oracledevtools.bookmarkFileFolder": "C:\\Users\\bmv3\\Oracle\\oracle.oracledevtools",
+    "oracledevtools.download.otherFolder": "C:\\Users\\bmv3\\downloads",
+    "jdk.jdkhome": "c:\\Users\\bmv3\\jdk-8u65-windows-x64\\jdk-8u65-windows-x64",
+    "task.problemMatchers.neverPrompt": {
+        "shell": true
+    },
+    "sqldeveloper.sqlHistory.historyLimit": 500
+}

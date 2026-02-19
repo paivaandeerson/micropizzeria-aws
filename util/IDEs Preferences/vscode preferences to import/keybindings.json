@@ -1,0 +1,12 @@
+// Place your key bindings in this file to override the defaults
+[
+    
+    { "key": "shift+f2",         
+        "command": "explorer.newFile",
+        "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus" 
+    },
+    {
+        "key": "shift+alt+oem_comma",
+        "command": "editor.action.moveSelectionToPreviousFindMatch"
+    },
+]
