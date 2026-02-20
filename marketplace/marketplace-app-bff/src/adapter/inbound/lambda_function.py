@@ -28,8 +28,13 @@ def lambda_handler(event, context):
                 
                 message = StatusUseCase().execute(order_id)
 
-                print(f"[INFO] Status check result: {message}")                
-                return return_200_successful(message)
+                print(f"[INFO] Status check result: {message}")     
+                return {
+                    "statusCode": 200,
+                    "body": json.dumps({
+                        "message": message,
+                    }),
+                }
             
             case ("POST", "/api/v1/payment"):
                 print("[INFO] Processing payment...")
@@ -40,7 +45,12 @@ def lambda_handler(event, context):
                 message = PaymentUseCase().execute(content)
 
                 print(f"[INFO] Payment processing result: {message}")
-                return return_200_successful(message)
+                return {
+                    "statusCode": 201,
+                    "body": json.dumps({
+                        "message": message,
+                    }),
+                }
             case _:
                 print("[WARNING] No matching route found.")
                 return {

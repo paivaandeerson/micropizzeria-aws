@@ -15,7 +15,7 @@ export class AdyenRepository {
       }
     };
     // const response = await axios.post('https://your-adyen-endpoint/api/initiatePayment', request);    
-    const response = { data: { resultCode: 'Authorised' } };
+    const response = { data: { resultCode: 'Authorized' } };
 
     return response.data;
   }

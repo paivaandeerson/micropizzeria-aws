@@ -11,9 +11,14 @@ export class PaymentService {
     this.adyenRepository = adyenService;
   }
 
-  async initiatePayment(paymentDetails: PaymentDetails) {
+  async processPayment(paymentDetails: PaymentDetails) {
+    console.log("[INFO] Processing payment...");
+    console.log(`[INFO] Payment content: ${JSON.stringify(paymentDetails, null, 2)}`);
+    
     const payment = await this.paymentDBRepository.createPayment(paymentDetails);
     const response = await this.adyenRepository.processPayment(payment);
+    
+    console.log(`[INFO] Payment processing result: ${JSON.stringify(response, null, 2)}`);
     return response;
   }
 }

@@ -12,7 +12,8 @@ class PaymentUseCase:
             print(f"[INFO] Processing payment with data: {payment_data}...")
             response = self._processor.process_payment(payment_data)
             print(f"[INFO] Payment processed successfully: {response}")
-            return response
+            message = "Payment processed successfully, the order is being prepared."
+            return message
         except BadRequestException as e:
             print("[Domain validation - BadRequestException]", e)
             raise

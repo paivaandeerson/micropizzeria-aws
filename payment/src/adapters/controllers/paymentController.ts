@@ -10,27 +10,31 @@ const adyenService = new AdyenRepository();
 const paymentService = new PaymentService(paymentRepository, adyenService);
 
 // Health Check Endpoint
-router.get('/health', (req: Request, res: Response) => {
+router.get('/health', (_req: Request, res: Response) => {
   res.status(200).send({
     status: 'OK',
     message: 'Payment service is up and running!'
   });
 });
 
-router.get('/all', async (req: Request, res: Response) => {
+router.get('/all', async (_req: Request, res: Response) => {
   const all = await paymentRepository.getAll();
   res.status(200).send(all);
 });
 
-router.post('/initiatePayment', async (req: Request, res: Response) => {
+router.post('/payment', async (req: Request, res: Response) => {
+  console.log('[INFO] Processing payment...');
+
   const paymentDetails = req.body;
+  console.log(`[INFO] Payment content: ${JSON.stringify(paymentDetails, null, 2)}`);
 
   try {
-    const response = await paymentService.initiatePayment(paymentDetails);
+    const response = await paymentService.processPayment(paymentDetails);
+    console.log(`[INFO] Payment processing result: ${JSON.stringify(response, null, 2)}`);
 
     switch (response.resultCode) {
       case "Authorized":
-        res.send({response: "success"});
+        res.send({ response: "success" });
         break;
       case "Pending":
       case "Received":
@@ -44,6 +48,7 @@ router.post('/initiatePayment', async (req: Request, res: Response) => {
         break;
     }
   } catch (error) {
+    console.error('[ERROR] Payment processing failed:', error);
     res.status(500).send('An error occurred while processing the payment');
   }
 });
