@@ -60,6 +60,7 @@ jobs:
 
       # 7️⃣ Upload Lambda to S3 (Artifacts)
       - name: Upload Lambda to S3
+        working-directory: ./marketplace
         run: |
           aws s3 cp marketplace-app-bff.zip \
           s3://${{ env.ARTIFACT_BUCKET }}/marketplace-app-bff/${{ github.sha }}.zip
