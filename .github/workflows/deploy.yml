@@ -76,7 +76,10 @@ jobs:
       - name: Terraform Apply
         working-directory: ./infra
         run: |
-          terraform init -input=false
+          terraform init -input=false 
           terraform apply -auto-approve -input=false \
+            -var="environment=production" \
+            -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
+            -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
             -var="image_tag=${{ github.sha }}" \
             -var="app_version=${{ github.sha }}"
