@@ -18,7 +18,7 @@ module "logistic_order_consumer" {
 
   s3_existing_package = {
     bucket = var.artifact_bucket
-    key    = "marketplace-app-bff/${var.version}.zip"
+    key    = "marketplace-app-bff/${var.app_version}.zip"
   }
 
   environment_variables = {

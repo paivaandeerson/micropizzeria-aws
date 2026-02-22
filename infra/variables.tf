@@ -3,7 +3,11 @@ variable "aws_region" {
 }
 
 variable "environment" {}
-variable "version" {}
+variable "app_version" {
+  description = "Application version"
+  type        = string
+}
+
 variable "artifact_bucket" {}
 
 variable "container_image" {}
