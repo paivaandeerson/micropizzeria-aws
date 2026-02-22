@@ -1,4 +1,4 @@
-name: ❌ Destroy Infrastructure
+name: 🗑️ Destroy Infrastructure
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ env:
 jobs:
   destroy:
     runs-on: ubuntu-latest
-    if: github.actor == 'paivaandeerson' && github.event.inputs.confirm == 'DESTROY'
+    if: github.actor == 'paivaandeerson'
     environment: production
 
     steps:
