@@ -2,35 +2,43 @@ module "logistic_order_consumer" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 6.0"
 
-  function_name = "logistic-order-consumer"
-  description   = "Consumes order-finished events to update logistic status"
-  handler       = "index.handler"
-  runtime       = "nodejs20.x"
+  function_name = "marketplace-app-bff"
+  description   = "Marketplace BFF Lambda"
 
-  # Points to the directory where your index.js and package.json are
-  source_path = "./src/logistic-consumer"
+  handler = "adapter.inbound.lambda_function.lambda_handler"
+  runtime = "python3.11"
 
-  # Essential for MSK (Private): Lambda must be in the same VPC as the cluster, to access it
-  vpc_subnet_ids         = ["subnet-123", "subnet-456"]
-  vpc_security_group_ids = [aws_security_group.lambda_msk_access.id]
+  memory_size = 128
+  timeout     = 10
 
-  # IAM Permissions to read from MSK
-  attach_policy_statements = true
-  policy_statements = {
-    msk_read = { #IAM Policy
-      effect    = "Allow"
-      actions   = ["kafka-cluster:Connect", "kafka-cluster:DescribeTopic", "kafka-cluster:ReadData"]
-      resources = [module.msk_cluster.arn]
-    }
+  publish = true
+
+  create_role                  = true
+  attach_cloudwatch_logs_policy = true
+
+  s3_existing_package = {
+    bucket = var.artifact_bucket
+    key    = "marketplace-app-bff/${var.version}.zip"
   }
 
-  # The Trigger (Event Source Mapping)
-  event_source_mapping = {
-    msk = {
-      event_source_arn  = module.msk_cluster.arn
-      topics            = ["order-finished-topic"]
-      starting_position = "TRIM_HORIZON" #Start from the very beginning of the Kafka log
-      batch_size        = 100 # AWS waits until it has 100 messages to deliver in one big array
-    }
+  environment_variables = {
+    ENVIRONMENT = var.environment
+  }
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
+
+  tags = var.common_tags
+}
+
+resource "aws_security_group" "lambda_sg" {
+  name   = "lambda-sg"
+  vpc_id = module.vpc.vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

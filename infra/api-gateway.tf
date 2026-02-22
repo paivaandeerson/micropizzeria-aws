@@ -1,0 +1,26 @@
+module "http_api" {
+  source  = "terraform-aws-modules/apigateway-v2/aws"
+  version = "~> 2.0"
+
+  name          = "logistic-api-${var.environment}"
+  protocol_type = "HTTP"
+
+  create_default_stage = true
+
+  integrations = {
+    "POST /orders" = {
+      lambda_arn             = module.logistic_order_consumer.lambda_function_arn
+      payload_format_version = "2.0"
+    }
+  }
+
+  tags = var.common_tags
+}
+
+resource "aws_lambda_permission" "allow_apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.marketplace_app_bff.lambda_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${module.http_api.api_execution_arn}/*/*"
+}

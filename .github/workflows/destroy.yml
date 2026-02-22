@@ -1,0 +1,40 @@
+name: Destroy Infrastructure
+
+on:
+  workflow_dispatch: # Add button in Actions -> Destroy Infrastructure -> Run Workflow
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: "us-east-1"
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    if: github.actor == 'paivaandeerson'
+    environment: production
+    steps:
+      #[Step1] 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      #[Step2] 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  #gh-secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} #gh-secrets
+          aws-region: ${{ env.AWS_REGION }}
+
+      #[Step3] 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      #[Step4] 
+      - name: Terraform Init & Destroy
+        run: |
+          terraform init
+          terraform destroy -auto-approve
+        working-directory: ./infra
