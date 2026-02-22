@@ -23,3 +23,11 @@ variable "common_tags" {
   type    = map(string)
   default = {}
 }
+
+variable "image_tag" {
+  type = string
+}
+
+locals {
+  container_image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
+}

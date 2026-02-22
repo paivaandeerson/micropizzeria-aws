@@ -23,7 +23,7 @@ module "ecs" {
 
       container_definitions = {
         payment-api = {
-          image = var.container_image
+          image = local.container_image
           port_mappings = [
             {
               containerPort = var.container_port
@@ -37,4 +37,12 @@ module "ecs" {
   }
 
   tags = var.common_tags
+}
+
+resource "aws_ecr_repository" "app" {
+  name = "micropizzeria-app"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }

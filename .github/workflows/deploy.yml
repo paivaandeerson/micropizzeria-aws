@@ -1,8 +1,8 @@
-name: 🚀 Deploy Infrastructure 
+name: 🚀 Deploy Infrastructure
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   id-token: write
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ AWS Auth
+      # 2️⃣ Configure AWS Credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -32,24 +32,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Login ECR
+      # 3️⃣ Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 4️⃣ Terraform Apply (Infra Base - garante que ECR existe)
+      - name: Terraform Init & Apply (Infra Base)
+        working-directory: ./infra
+        run: |
+          terraform init
+          terraform apply -auto-approve -var="image_tag=init"
+
+      # 5️⃣ Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 4️⃣ Build Java (kitchen)
-      # - name: Set up JDK 21
-      #   uses: actions/setup-java@v3
-      #   with:
-      #     java-version: '21'
-      #     distribution: 'temurin'
-      #     cache: maven
-
-      # - name: Build JAR
-      #   working-directory: ./kitchen
-      #   run: mvn clean package -DskipTests
-
-      # 5️⃣ Build Docker (payment ou kitchen dependendo do Dockerfile)
+      # 6️⃣ Build and Push Docker Image
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -59,14 +58,9 @@ jobs:
           docker build -t $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG .
           docker push $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG
 
-      # 6️⃣ Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      # 7️⃣ Terraform Apply com nova tag
-      - name: Terraform Init & Apply
+      # 7️⃣ Terraform Apply (Deploy Nova Imagem)
+      - name: Terraform Apply (Deploy Image)
         working-directory: ./infra
         run: |
-          terraform init
           terraform apply -auto-approve \
             -var="image_tag=${{ github.sha }}"
