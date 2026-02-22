@@ -1,7 +1,11 @@
-name: ✕ Destroy Infrastructure
+name: ❌ Destroy Infrastructure
 
 on:
-  workflow_dispatch: # Add button in Actions -> Destroy Infrastructure -> Run Workflow
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DESTROY to confirm infrastructure destruction"
+        required: true
 
 permissions:
   id-token: write
@@ -9,32 +13,45 @@ permissions:
 
 env:
   AWS_REGION: "us-east-1"
+  BUCKET_NAME: "micropizzeria-infra-state"
 
 jobs:
   destroy:
     runs-on: ubuntu-latest
-    if: github.actor == 'paivaandeerson'
+    if: github.actor == 'paivaandeerson' && github.event.inputs.confirm == 'DESTROY'
     environment: production
+
     steps:
-      #[Step1] 
+      # 1️⃣ Checkout
       - name: Checkout code
         uses: actions/checkout@v4
 
-      #[Step2] 
+      # 2️⃣ Configure AWS
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  #gh-secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} #gh-secrets
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      #[Step3] 
+      # 3️⃣ Ensure backend bucket exists (mesmo padrão do deploy)
+      - name: Ensure S3 Backend Exists
+        run: |
+          if ! aws s3api head-bucket --bucket "${{ env.BUCKET_NAME }}" 2>/dev/null; then
+            echo "Backend bucket does not exist. Aborting."
+            exit 1
+          fi
+
+      # 4️⃣ Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      #[Step4] 
-      - name: Terraform Init & Destroy
-        run: |
-          terraform init
-          terraform destroy -auto-approve
+      # 5️⃣ Terraform Init
+      - name: Terraform Init
         working-directory: ./infra
+        run: terraform init
+
+      # 6️⃣ Terraform Destroy
+      - name: Terraform Destroy
+        working-directory: ./infra
+        run: terraform destroy -auto-approve

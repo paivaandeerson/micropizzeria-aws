@@ -1,4 +1,4 @@
-module "logistic_order_consumer" {
+module "marketplace-app-bff" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 6.0"
 
@@ -13,6 +13,7 @@ module "logistic_order_consumer" {
 
   publish = true
 
+  source_path = "../marketplace/marketplace-app-bff"
   create_role                  = true
   attach_cloudwatch_logs_policy = true
 

@@ -1,4 +1,4 @@
-name: ✔ Deploy Infrastructure 
+name: ✅ Deploy Infrastructure 
 
 on:
   push:
@@ -9,47 +9,35 @@ permissions:
   contents: read
 
 env:
-  BUCKET_NAME: "micropizzeria-infra-state" 
+  BUCKET_NAME: "micropizzeria-infra-state"
   AWS_REGION: "us-east-1"
   APP_NAME: "micropizzeria-app"
 
 jobs:
-  infra-and-app:
+  deploy:
     runs-on: ubuntu-latest
     if: github.actor == 'paivaandeerson'
     environment: production
+
     steps:
-      #[Step1] 
+      # 1️⃣ Checkout
       - name: Checkout code
         uses: actions/checkout@v4
 
-      #[Step2] 
+      # 2️⃣ AWS Auth
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} #gh-secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} #gh-secrets
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-     #[Step3] 
-      - name: Ensure S3 Bucket exists
-        run: |
-          if ! aws s3api head-bucket --bucket "${{ env.BUCKET_NAME }}" 2>/dev/null; then
-            aws s3api create-bucket --bucket "${{ env.BUCKET_NAME }}" --region ${{ env.AWS_REGION }}
-          fi
+      # 3️⃣ Login ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      #[Step4] 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      
-      #[Step5] 
-      - name: Terraform Init & Apply
-        run: |
-          terraform init
-          terraform apply -auto-approve
-        working-directory: ./infra
-
-       #[Step6] 
+      # 4️⃣ Build Java (kitchen)
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
@@ -57,28 +45,28 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      #[Step7] 
       - name: Build JAR
+        working-directory: ./kitchen
         run: mvn clean package -DskipTests
 
-      #[Step8] 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      #[Step9] 
+      # 5️⃣ Build Docker (payment ou kitchen dependendo do Dockerfile)
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: anderson-account-balance-app
           IMAGE_TAG: ${{ github.sha }}
+        working-directory: ./payment
         run: |
           docker build -t $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG .
-          docker tag $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG $ECR_REGISTRY/${{ env.APP_NAME }}:latest
           docker push $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG
-          docker push $ECR_REGISTRY/${{ env.APP_NAME }}:latest
 
-       #[Step10] 
-      - name: Update ECS Service
+      # 6️⃣ Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 7️⃣ Terraform Apply com nova tag
+      - name: Terraform Init & Apply
+        working-directory: ./infra
         run: |
-          aws ecs update-service --cluster accountbalance-api-cluster --service accountbalance-api-service --force-new-deployment
+          terraform init
+          terraform apply -auto-approve \
+            -var="image_tag=${{ github.sha }}"
