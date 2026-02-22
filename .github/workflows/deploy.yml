@@ -21,10 +21,9 @@ jobs:
 
     steps:
       # 1️⃣ Checkout
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Configure AWS Credentials
+      # 2️⃣ AWS Credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -32,45 +31,49 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Login ECR
+      # 3️⃣ Ensure Artifact Bucket Exists
+      - name: Ensure Artifact Bucket exists
+        run: |
+          aws s3api head-bucket --bucket $ARTIFACT_BUCKET 2>/dev/null \
+          || aws s3 mb s3://$ARTIFACT_BUCKET --region $AWS_REGION
+
+      # 4️⃣ Login ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 4️⃣ Ensure ECR repository exists
+      # 5️⃣ Ensure ECR Repository Exists
       - name: Ensure ECR repository exists
         run: |
-          aws ecr describe-repositories --repository-names ${{ env.APP_NAME }} \
-          || aws ecr create-repository --repository-name ${{ env.APP_NAME }}
+          aws ecr describe-repositories --repository-names $APP_NAME 2>/dev/null \
+          || aws ecr create-repository --repository-name $APP_NAME
 
-      # 5️⃣ Build & Push Docker Image (ECS)
+      # 6️⃣ Build & Push Docker Image
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
         working-directory: ./payment
         run: |
-          docker build -t $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$APP_NAME:${{ github.sha }} .
+          docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}
 
-      # 6️⃣ Zip Lambda
+      # 7️⃣ Zip Lambda
       - name: Zip Lambda
         working-directory: ./marketplace
         run: zip -r marketplace-app-bff.zip .
 
-      # 7️⃣ Upload Lambda to S3 (Artifacts)
+      # 8️⃣ Upload Lambda Artifact
       - name: Upload Lambda to S3
         working-directory: ./marketplace
         run: |
           aws s3 cp marketplace-app-bff.zip \
-          s3://${{ env.ARTIFACT_BUCKET }}/marketplace-app-bff/${{ github.sha }}.zip
+          s3://$ARTIFACT_BUCKET/marketplace-app-bff/${{ github.sha }}.zip
 
-      # 8️⃣ Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      # 9️⃣ Setup Terraform
+      - uses: hashicorp/setup-terraform@v3
 
-      # 9️⃣ Terraform Apply (Infra + Deploy)
-      - name: Terraform Init & Apply
+      # 🔟 Terraform Apply
+      - name: Terraform Apply
         working-directory: ./infra
         run: |
           terraform init -input=false

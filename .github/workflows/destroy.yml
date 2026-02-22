@@ -9,6 +9,7 @@ permissions:
 
 env:
   AWS_REGION: "us-east-1"
+  ARTIFACT_BUCKET: "micropizzeria-artifacts"
 
 jobs:
   destroy:
@@ -18,10 +19,9 @@ jobs:
 
     steps:
       # 1️⃣ Checkout
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Configure AWS Credentials
+      # 2️⃣ AWS Credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -30,14 +30,23 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       # 3️⃣ Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v3
 
       # 4️⃣ Terraform Destroy
-      - name: Terraform Init & Destroy
+      - name: Terraform Destroy
         working-directory: ./infra
         run: |
           terraform init -input=false
           terraform destroy -auto-approve -input=false \
             -var="image_tag=dummy" \
             -var="app_version=dummy"
+
+      # 5️⃣ Empty Artifact Bucket
+      - name: Empty Artifact Bucket
+        run: |
+          aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
+
+      # 6️⃣ Delete Artifact Bucket
+      - name: Delete Artifact Bucket
+        run: |
+          aws s3 rb s3://$ARTIFACT_BUCKET || true
