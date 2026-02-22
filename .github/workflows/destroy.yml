@@ -1,11 +1,7 @@
-name: 🗑️ Destroy Infrastructure
+name: 💣 Destroy Infrastructure
 
 on:
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: "Type DESTROY to confirm infrastructure destruction"
-        required: true
 
 permissions:
   id-token: write
@@ -13,7 +9,6 @@ permissions:
 
 env:
   AWS_REGION: "us-east-1"
-  BUCKET_NAME: "micropizzeria-infra-state"
 
 jobs:
   destroy:
@@ -26,7 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Configure AWS
+      # 2️⃣ Configure AWS Credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -34,24 +29,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Ensure backend bucket exists (mesmo padrão do deploy)
-      - name: Ensure S3 Backend Exists
-        run: |
-          if ! aws s3api head-bucket --bucket "${{ env.BUCKET_NAME }}" 2>/dev/null; then
-            echo "Backend bucket does not exist. Aborting."
-            exit 1
-          fi
-
-      # 4️⃣ Setup Terraform
+      # 3️⃣ Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # 5️⃣ Terraform Init
-      - name: Terraform Init
+      # 4️⃣ Terraform Destroy
+      - name: Terraform Init & Destroy
         working-directory: ./infra
-        run: terraform init
-
-      # 6️⃣ Terraform Destroy
-      - name: Terraform Destroy
-        working-directory: ./infra
-        run: terraform destroy -auto-approve
+        run: |
+          terraform init -input=false
+          terraform destroy -auto-approve -input=false \
+            -var="image_tag=dummy" \
+            -var="app_version=dummy"

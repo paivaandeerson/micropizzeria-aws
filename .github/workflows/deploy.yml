@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 env:
-  BUCKET_NAME: "micropizzeria-infra-state"
   AWS_REGION: "us-east-1"
   APP_NAME: "micropizzeria-app"
+  ARTIFACT_BUCKET: "micropizzeria-artifacts"
 
 jobs:
   deploy:
@@ -32,23 +32,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      # 4️⃣ Terraform Apply (Infra Base - garante que ECR existe)
-      - name: Terraform Init & Apply (Infra Base)
-        working-directory: ./infra
-        run: |
-          terraform init
-          terraform apply -auto-approve -var="image_tag=init"
-
-      # 5️⃣ Login to Amazon ECR
+      # 3️⃣ Login ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 6️⃣ Build and Push Docker Image
+      # 4️⃣ Ensure ECR repository exists
+      - name: Ensure ECR repository exists
+        run: |
+          aws ecr describe-repositories --repository-names ${{ env.APP_NAME }} \
+          || aws ecr create-repository --repository-name ${{ env.APP_NAME }}
+
+      # 5️⃣ Build & Push Docker Image (ECS)
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -58,9 +53,26 @@ jobs:
           docker build -t $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG .
           docker push $ECR_REGISTRY/${{ env.APP_NAME }}:$IMAGE_TAG
 
-      # 7️⃣ Terraform Apply (Deploy Nova Imagem)
-      - name: Terraform Apply (Deploy Image)
+      # 6️⃣ Zip Lambda
+      - name: Zip Lambda
+        working-directory: ./marketplace
+        run: zip -r marketplace-app-bff.zip .
+
+      # 7️⃣ Upload Lambda to S3 (Artifacts)
+      - name: Upload Lambda to S3
+        run: |
+          aws s3 cp marketplace-app-bff.zip \
+          s3://${{ env.ARTIFACT_BUCKET }}/marketplace-app-bff/${{ github.sha }}.zip
+
+      # 8️⃣ Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 9️⃣ Terraform Apply (Infra + Deploy)
+      - name: Terraform Init & Apply
         working-directory: ./infra
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=${{ github.sha }}"
+          terraform init -input=false
+          terraform apply -auto-approve -input=false \
+            -var="image_tag=${{ github.sha }}" \
+            -var="app_version=${{ github.sha }}"
