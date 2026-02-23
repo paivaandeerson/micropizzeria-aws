@@ -33,6 +33,6 @@ variable "image_tag" {
   type = string
 }
 
-locals {
-  container_image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
-}
+# locals {
+#   container_image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
+# }
