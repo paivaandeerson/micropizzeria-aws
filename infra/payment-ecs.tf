@@ -23,7 +23,7 @@ module "ecs" {
 
       container_definitions = {
         payment-api = {
-          image     = "${aws_ecr_repository.api_repo.repository_url}:latest"
+          image     = var.container_image
           port_mappings = [
             {
               containerPort = var.container_port
