@@ -5,14 +5,15 @@ module "alb" {
   name               = "payment-alb"
   load_balancer_type = "application"
   vpc_id             = module.vpc.vpc_id
-  subnets            = module.vpc.public_subnets
+  subnets            = module.vpc.private_subnets
+  internal = true
 
   security_group_ingress_rules = {
     http = {
       from_port   = 80
       to_port     = 80
       ip_protocol = "tcp"
-      cidr_ipv4 = "0.0.0.0/0"
+      referenced_security_group_id = aws_security_group.lambda_sg.id
     }
   }
 
@@ -21,7 +22,6 @@ module "alb" {
     backend_protocol = "HTTP"
     backend_port     = var.container_port
     target_type      = "ip"
-
     create_attachment = false
   }
 }
