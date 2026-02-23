@@ -3,11 +3,17 @@ variable "aws_region" {
 }
 
 variable "environment" {}
+
 variable "app_version" {
   description = "Application version"
   type        = string
 }
 
+variable "artifact_bucket" {}
+variable "lambda_s3_key" {
+  description = "S3 key for the Lambda deployment package"
+  type        = string
+}
 variable "artifact_bucket" {}
 
 variable "container_image" {}
