@@ -5,11 +5,7 @@ module "http_api" {
   name          = "logistic-api-${var.environment}"
   protocol_type = "HTTP"
 
-  create_default_stage = true
-
-  # Disable custom domain by default
-  domain_name = null
-  domain_name_certificate_arn = null
+  create_default_stage = true 
 
   integrations = {
     "POST /orders" = {

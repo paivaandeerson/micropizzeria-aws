@@ -39,6 +39,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Ensure ECR repository exists
+        run: |
+          aws ecr describe-repositories --repository-names "$APP_NAME" >/dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "$APP_NAME"
+
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -67,7 +72,9 @@ jobs:
             -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
             -var="image_tag=${{ github.sha }}" \
             -var="app_version=${{ github.sha }}" \
-            -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip"
+            -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
+            -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
+            -var="environment=production"
 
       - name: Update ECS Service
         run: echo "ECS service update is handled by Terraform (image set via var.container_image)."

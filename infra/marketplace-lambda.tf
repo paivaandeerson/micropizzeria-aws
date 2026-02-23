@@ -26,7 +26,7 @@ module "marketplace-app-bff" {
     ENVIRONMENT = var.environment
   }
 
-  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_subnet_ids         = module.vpc.public_subnets
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
   tags = var.common_tags
