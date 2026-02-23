@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "api_repo" {
-  name = "market-place-app"
+  name = "marketplace-app"
   image_tag_mutability = "MUTABLE" # allows to overwrite an image using the same tag
   force_delete = true
 }

@@ -49,7 +49,7 @@ jobs:
       
       - name: Update ECS Service
         run: |
-          aws ecs update-service --cluster marketplace-api-cluster --service marketplace-api-service --force-new-deployment    
+          aws ecs update-service --cluster payment-cluster --service payment-service --force-new-deployment    
 
       - name: Zip Lambda
         working-directory: ./marketplace
