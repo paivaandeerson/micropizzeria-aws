@@ -9,7 +9,7 @@ module "http_api" {
 
   integrations = {
     "POST /orders" = {
-      lambda_arn             = module.logistic_order_consumer.lambda_function_arn
+      lambda_arn             = module.marketplace-app-bff.lambda_function_arn
       payload_format_version = "2.0"
     }
   }

@@ -26,7 +26,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
+      - name: Empty Artifact Bucket
+        run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
+        
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Destroy
@@ -36,7 +38,8 @@ jobs:
           terraform destroy -auto-approve -input=false \
             -var="container_image=dummy" \
             -var="image_tag=dummy" \
-            -var="app_version=dummy"
+            -var="app_version=dummy" \
+            -var="lambda_s3_key=dummy"
 
       - name: Empty Artifact Bucket
         run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
