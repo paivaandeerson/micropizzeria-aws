@@ -7,6 +7,7 @@ module "alb" {
   vpc_id             = module.vpc.vpc_id
   subnets            = module.vpc.private_subnets
   internal = true
+  enable_deletion_protection = false
 
   security_group_ingress_rules = {
     http = {
