@@ -13,7 +13,7 @@ module "marketplace-app-bff" {
 
   publish = true
 
-  source_path = "../marketplace/marketplace-app-bff"
+  create_package = false
   create_role                  = true
   attach_cloudwatch_logs_policy = true
 

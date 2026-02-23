@@ -20,7 +20,7 @@ module "http_api" {
 resource "aws_lambda_permission" "allow_apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = module.marketplace_app_bff.lambda_function_name
+  function_name = module.marketplace-app-bff.lambda_function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.http_api.api_execution_arn}/*/*"
+  source_arn    = "${module.http_api.apigatewayv2_api_execution_arn}/*/*"
 }

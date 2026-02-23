@@ -3,7 +3,7 @@ output "alb_dns" {
 }
 
 output "api_gateway_url" {
-  value = module.http_api.api_endpoint
+  value = module.http_api.apigatewayv2_api_api_endpoint
 }
 
 output "ecs_cluster_name" {
