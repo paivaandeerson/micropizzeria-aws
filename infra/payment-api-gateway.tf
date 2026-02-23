@@ -6,6 +6,7 @@ module "http_api" {
   protocol_type = "HTTP"
 
   create_default_stage = true 
+  create_api_domain_name = false
 
   integrations = {
     "POST /orders" = {
