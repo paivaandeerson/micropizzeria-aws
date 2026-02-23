@@ -7,6 +7,10 @@ module "http_api" {
 
   create_default_stage = true
 
+  # Disable custom domain by default
+  domain_name = ""
+  domain_name_certificate_arn = ""
+
   integrations = {
     "POST /orders" = {
       lambda_arn             = module.marketplace-app-bff.lambda_function_arn

@@ -12,7 +12,6 @@ module "alb" {
       from_port   = 80
       to_port     = 80
       ip_protocol = "tcp"
-      security_groups = [module.alb.security_group_id]
     }
   }
 

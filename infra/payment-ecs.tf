@@ -15,11 +15,13 @@ module "ecs" {
       subnet_ids       = module.vpc.public_subnets
       assign_public_ip = false
 
-      load_balancer = {
-        target_group_arn = module.alb.target_groups["payment"].arn
-        container_name   = "payment-api"
-        container_port   = var.container_port
-      }
+      load_balancers = [
+        {
+          target_group_arn = module.alb.target_groups["payment"].arn
+          container_name   = "payment-api"
+          container_port   = var.container_port
+        }
+      ]
 
       container_definitions = {
         payment-api = {
