@@ -8,8 +8,8 @@ module "http_api" {
   create_default_stage = true
 
   # Disable custom domain by default
-  domain_name = ""
-  domain_name_certificate_arn = ""
+  domain_name = null
+  domain_name_certificate_arn = null
 
   integrations = {
     "POST /orders" = {

@@ -12,6 +12,7 @@ module "alb" {
       from_port   = 80
       to_port     = 80
       ip_protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
@@ -20,6 +21,7 @@ module "alb" {
       backend_protocol = "HTTP"
       backend_port     = var.container_port
       target_type      = "ip"
+      targets = []
     }
   }
 
