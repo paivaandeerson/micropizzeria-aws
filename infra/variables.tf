@@ -9,7 +9,6 @@ variable "app_version" {
   type        = string
 }
 
-variable "artifact_bucket" {}
 variable "lambda_s3_key" {
   description = "S3 key for the Lambda deployment package"
   type        = string
