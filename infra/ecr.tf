@@ -11,5 +11,5 @@ resource "aws_ecr_repository" "api_repo" {
 }
 
 output "ecr_repository_url" {
-  value = aws_ecr_repository.api_repo.repository_url
+  value = length(aws_ecr_repository.api_repo) > 0 ? aws_ecr_repository.api_repo[0].repository_url : ""
 }
