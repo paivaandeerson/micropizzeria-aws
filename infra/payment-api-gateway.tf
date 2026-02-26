@@ -2,7 +2,7 @@ module "http_api" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "~> 2.0"
 
-  name          = "logistic-api-${var.environment}"
+  name          = "payment-api-${var.environment}"
   protocol_type = "HTTP"
 
   create_default_stage = true 

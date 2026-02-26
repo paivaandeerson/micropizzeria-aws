@@ -1,21 +1,22 @@
-variable "aws_region" {
-  default = "us-east-1"
-}
-
+#declaration for terraform.tfvars file
 variable "environment" {}
+variable "artifact_bucket" {}
+variable "container_image" {}
 
 variable "app_version" {
   description = "Application version"
   type        = string
 }
 
+variable "aws_region" {
+  default = "us-east-1"
+}
+
 variable "lambda_s3_key" {
   description = "S3 key for the Lambda deployment package"
   type        = string
 }
-variable "artifact_bucket" {}
 
-variable "container_image" {}
 variable "container_port" {
   default = 3000
 }
@@ -32,7 +33,3 @@ variable "common_tags" {
 variable "image_tag" {
   type = string
 }
-
-# locals {
-#   container_image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
-# }

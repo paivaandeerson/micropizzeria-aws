@@ -19,13 +19,13 @@ module "alb" {
   }
 
   target_groups = {
-  payment = {
-    backend_protocol = "HTTP"
-    backend_port     = var.container_port
-    target_type      = "ip"
-    create_attachment = false
+    payment = {
+      backend_protocol = "HTTP"
+      backend_port     = var.container_port
+      target_type      = "ip"
+      create_attachment = false
+    }
   }
-}
 
   listeners = {
     http = {

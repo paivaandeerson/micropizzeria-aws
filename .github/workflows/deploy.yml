@@ -29,7 +29,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Criar bucket se não existir
+      # Create bucket if it doesn't exist (just for Lambda artifacts)
       - name: Ensure Artifact Bucket exists
         run: |
           aws s3api head-bucket --bucket $ARTIFACT_BUCKET 2>/dev/null \
