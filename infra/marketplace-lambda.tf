@@ -16,8 +16,8 @@ module "marketplace-app-bff" {
 
   source_path = [
     {
-      path             = "../marketplace-app-bff"
-      pip_requirements = "../marketplace-app-bff/requirements.txt"
+      path             = "../marketplace/marketplace-app-bff"
+      pip_requirements = "../marketplace/marketplace-app-bff/requirements.txt"
     }
   ]
 

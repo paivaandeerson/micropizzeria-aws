@@ -50,17 +50,7 @@ jobs:
         working-directory: ./payment
         run: |
           docker build -t $ECR_REGISTRY/$APP_NAME:${{ github.sha }} .
-          docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}
-          
-      # - name: Zip Lambda
-      #   working-directory: ./marketplace
-      #   run: zip -r marketplace-app-bff.zip .
-
-      # - name: Upload Lambda to S3
-      #   working-directory: ./marketplace
-      #   run: |
-      #     aws s3 cp marketplace-app-bff.zip \
-      #     s3://$ARTIFACT_BUCKET/marketplace-app-bff/${{ github.sha }}.zip
+          docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}          
 
       - uses: hashicorp/setup-terraform@v3
 
