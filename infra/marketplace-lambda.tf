@@ -6,7 +6,7 @@ module "marketplace-app-bff" {
   description   = "Marketplace BFF Lambda"
   handler = "src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
-  memory_size = 128
+  memory_size = 512
   timeout     = 10
 
   publish = true
