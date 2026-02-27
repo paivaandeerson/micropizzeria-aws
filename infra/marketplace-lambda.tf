@@ -35,6 +35,9 @@ module "marketplace-app-bff" {
 resource "aws_security_group" "lambda_sg" {
   name   = "lambda-sg"
   vpc_id = module.vpc.vpc_id
+  timeouts {
+    delete = "15m"
+  }
 
   egress {
     from_port   = 0 #"allow all outbound" rule for the Lambda function, enabling it to access external services if needed.
