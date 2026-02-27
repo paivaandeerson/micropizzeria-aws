@@ -16,11 +16,10 @@ module "marketplace-app-bff" {
 
   source_path = [
     {
-      path             = "../marketplace/marketplace-app-bff"
-      pip_requirements = "../marketplace/marketplace-app-bff/requirements.txt"
+      path             = "${path.root}/../marketplace/marketplace-app-bff"
+      pip_requirements = "${path.root}/../marketplace/marketplace-app-bff/src/requirements.txt"
     }
   ]
-
   create_role = true
   attach_cloudwatch_logs_policy = true
   attach_policies = true
