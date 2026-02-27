@@ -4,7 +4,7 @@ module "marketplace-app-bff" {
 
   function_name = "marketplace-app-bff"
   description   = "Marketplace BFF Lambda"
-  handler = "src.adapter.inbound.lambda_function.lambda_handler"
+  handler = "marketplace-app-bff.src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
   memory_size = 512
   timeout     = 10
@@ -23,7 +23,7 @@ module "marketplace-app-bff" {
 
   s3_existing_package = {
     bucket = var.artifact_bucket
-    key    = "${var.app_version}.zip"
+    key    = "marketplace-app-bff/${var.app_version}.zip"
   }
 
   vpc_subnet_ids = module.vpc.private_subnets
