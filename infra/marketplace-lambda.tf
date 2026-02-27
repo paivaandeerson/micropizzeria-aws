@@ -23,7 +23,7 @@ module "marketplace-app-bff" {
 
   s3_existing_package = {
     bucket = var.artifact_bucket
-    key    = "marketplace-app-bff/${var.app_version}.zip"
+    key    = "${var.app_version}.zip"
   }
 
   vpc_subnet_ids = module.vpc.private_subnets
