@@ -4,7 +4,6 @@ module "marketplace-app-bff" {
 
   function_name = "marketplace-app-bff"
   description   = "Marketplace BFF Lambda"
-
   handler = "src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
 

@@ -50,7 +50,12 @@ jobs:
         working-directory: ./payment
         run: |
           docker build -t $ECR_REGISTRY/$APP_NAME:${{ github.sha }} .
-          docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}          
+          docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}
+          
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"              
 
       - uses: hashicorp/setup-terraform@v3
 
