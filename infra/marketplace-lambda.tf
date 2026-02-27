@@ -4,29 +4,33 @@ module "marketplace-app-bff" {
 
   function_name = "marketplace-app-bff"
   description   = "Marketplace BFF Lambda"
-  handler = "marketplace-app-bff.src.adapter.inbound.lambda_function.lambda_handler"
+
+  handler = "src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
+
   memory_size = 512
   timeout     = 10
 
   publish = true
-  create_package = false
+  create_package = true
+
+  source_path = [
+    {
+      path             = "../marketplace-app-bff"
+      pip_requirements = "../marketplace-app-bff/requirements.txt"
+    }
+  ]
+
   create_role = true
   attach_cloudwatch_logs_policy = true
   attach_policies = true
   number_of_policies = 1
 
-  #permissions needed to run inside a VPC and access other AWS services if needed (e.g., S3, DynamoDB)
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
   ]
 
-  s3_existing_package = {
-    bucket = var.artifact_bucket
-    key    = "marketplace-app-bff/${var.app_version}.zip"
-  }
-
-  vpc_subnet_ids = module.vpc.private_subnets
+  vpc_subnet_ids         = module.vpc.private_subnets
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
   tags = var.common_tags
