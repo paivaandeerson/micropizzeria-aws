@@ -1,7 +1,7 @@
 {
   "body":"{ \"orderId\": \"ORD-12345\", \"amount\": 56.00, \"currency\": \"USD\", \"payment_method\": { \"type\": \"card\", \"card_token\": \"tok_visa_0000\" }, \"customer\": { \"email\": \"customer@example.com\", \"name\": \"John Doe\" }, \"description\": \"Purchase of Order #12345\" }",
-  "resource": "/api/v1/payment",
-  "path": "/api/v1/payment",
+  "resource": "/v1/payment",
+  "path": "/v1/payment",
   "httpMethod": "POST",
   "isBase64Encoded": false,
   "queryStringParameters": {
@@ -53,8 +53,8 @@
       "userAgent": "Custom User Agent String",
       "user": null
     },
-    "path": "/api/v1/payment",
-    "resourcePath": "/api/v1/payment",
+    "path": "/v1/payment",
+    "resourcePath": "/v1/payment",
     "httpMethod": "POST",
     "apiId": "1234567890",
     "protocol": "HTTP/1.1"

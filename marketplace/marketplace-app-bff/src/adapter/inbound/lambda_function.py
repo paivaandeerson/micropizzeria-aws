@@ -17,7 +17,7 @@ def lambda_handler(event, context):
 
     try:        
         match (method, path):
-            case ("GET", "/api/v1/check-status/{order_id}"):
+            case ("GET", "/v1/check-status/{order_id}"):
                 
                 order_id = event["pathParameters"]["order_id"]
                 print("[INFO] order_id: " + order_id)
@@ -36,7 +36,7 @@ def lambda_handler(event, context):
                     }),
                 }
             
-            case ("POST", "/api/v1/payment"):
+            case ("POST", "/v1/payment"):
                 print("[INFO] Processing payment...")
                
                 content = json.loads(event["body"])
