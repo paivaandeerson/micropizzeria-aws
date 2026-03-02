@@ -1,7 +1,7 @@
 import requests
-from application.exception.bad_request_exception import BadRequestException
-from application.exception.not_found_exception import NotFoundException
-from adapter.outbound.payment_api_adapter import PaymentAPIAdapter
+from src.application.exception.bad_request_exception import BadRequestException
+from src.application.exception.not_found_exception import NotFoundException
+from src.adapter.outbound.payment_api_adapter import PaymentAPIAdapter
 
 class PaymentUseCase:
     def __init__(self, payment_processor=None):

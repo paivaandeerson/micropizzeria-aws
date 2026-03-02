@@ -1,5 +1,5 @@
 import uuid
-from adapter.outbound.status_api_adapter import StatusAPIAdapter
+from src.adapter.outbound.status_api_adapter import StatusAPIAdapter
 
 class StatusUseCase:
     def __init__(self, status_adapter=None):

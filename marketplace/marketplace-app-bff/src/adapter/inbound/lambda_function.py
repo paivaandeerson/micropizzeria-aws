@@ -1,10 +1,10 @@
 import json
 import requests
 
-from application.exception.bad_request_exception import BadRequestException
-from application.exception.not_found_exception import NotFoundException
-from application.process_payment_use_case import PaymentUseCase
-from application.status_use_case import StatusUseCase
+from src.application.exception.bad_request_exception import BadRequestException
+from src.application.exception.not_found_exception import NotFoundException
+from src.application.process_payment_use_case import PaymentUseCase
+from src.application.status_use_case import StatusUseCase
 
 
 def lambda_handler(event, context):
