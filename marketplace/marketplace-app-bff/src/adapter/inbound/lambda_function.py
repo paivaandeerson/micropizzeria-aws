@@ -9,8 +9,8 @@ from src.application.status_use_case import StatusUseCase
 
 def lambda_handler(event, context):
     print("Received event: " + json.dumps(event, indent=2))
-    method = event["httpMethod"]
-    path = event["resource"]
+    method = event["requestContext"]["http"]["method"]
+    path = event["rawPath"]
     
     print("[INFO] method: " + method)
     print("[INFO] path: " + path)
