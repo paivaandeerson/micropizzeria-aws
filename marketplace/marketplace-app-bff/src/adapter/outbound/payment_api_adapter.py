@@ -1,7 +1,7 @@
 import requests
 import os
 
-DEFAULT_API_URL = os.environ.get("PAYMENT_SERVICE_API", "http://payment-container:3000/api/payment")
+DEFAULT_API_URL = os.environ.get("PAYMENT_SERVICE_API", "http://payment-api:3000/api/payment")
 
 class PaymentAPIAdapter:
     def __init__(self, api_url: str | None = None, session: requests.Session | None = None):

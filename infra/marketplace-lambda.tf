@@ -7,7 +7,7 @@ module "marketplace-app-bff" {
   handler = "src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
 
-  memory_size = 512
+  memory_size = 256
   timeout     = 10
 
   publish = true
@@ -31,6 +31,9 @@ module "marketplace-app-bff" {
   vpc_subnet_ids         = module.vpc.private_subnets
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
+  environment_variables = {
+    PAYMENT_SERVICE_API = "http://${module.alb.dns_name}/payment"
+  }
   tags = var.common_tags
 }
 

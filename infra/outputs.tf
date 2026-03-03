@@ -9,3 +9,7 @@ output "api_gateway_url" {
 output "ecs_cluster_name" {
   value = module.ecs.cluster_name
 }
+
+output "payment_api_url" {  
+  value = "http://${module.alb.dns_name}"
+}
