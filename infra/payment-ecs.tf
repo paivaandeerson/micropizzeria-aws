@@ -26,6 +26,7 @@ module "ecs" {
       container_definitions = {
         payment-api = {
           image     = var.container_image
+          readonly_root_filesystem = false
           port_mappings = [
             {
               containerPort = var.container_port

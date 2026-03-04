@@ -14,7 +14,7 @@ module "vpc" {
   tags = var.common_tags
 }
 
-#vpc_endpoints
+#vpc_endpoints to avoid NAT gateway costs and allow private connectivity to AWS services from the private subnets
 resource "aws_security_group" "vpc_endpoints" {
   vpc_id = module.vpc.vpc_id
 

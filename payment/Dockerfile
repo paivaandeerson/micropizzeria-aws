@@ -16,6 +16,8 @@ COPY . .
 # Compile o código TypeScript
 RUN npm run build
 
+RUN mkdir -p /tmp
+
 # Exponha a porta na qual a aplicação será executada
 EXPOSE 3000
 
