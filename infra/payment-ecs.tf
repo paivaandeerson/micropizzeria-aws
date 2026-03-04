@@ -12,9 +12,9 @@ module "ecs" {
       desired_count = var.desired_count
       launch_type   = "FARGATE"
 
-      subnet_ids       = module.vpc.public_subnets
+      subnet_ids       = module.vpc.private_subnets
       assign_public_ip = false
-
+      security_group_ids = [aws_security_group.ecs_tasks.id]
       load_balancers = [
         {
           target_group_arn = module.alb.target_groups["payment"].arn
@@ -39,4 +39,23 @@ module "ecs" {
   }
 
   tags = var.common_tags
+}
+
+resource "aws_security_group" "ecs_tasks" {
+  name   = "ecs-tasks-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port       = var.container_port
+    to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [module.alb.security_group_id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }

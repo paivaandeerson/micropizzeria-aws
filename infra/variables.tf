@@ -27,7 +27,10 @@ variable "desired_count" {
 
 variable "common_tags" {
   type    = map(string)
-  default = {}
+  default = {
+    # Environment = "dev"
+    # Project     = "payment"
+  }
 }
 
 variable "image_tag" {

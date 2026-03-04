@@ -40,6 +40,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
   subnet_ids         = module.vpc.private_subnets
   security_group_ids = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
 }
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
@@ -49,6 +50,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 
   subnet_ids         = module.vpc.private_subnets
   security_group_ids = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
 }
 
 resource "aws_vpc_endpoint" "s3" {
