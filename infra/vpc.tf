@@ -59,3 +59,13 @@ resource "aws_vpc_endpoint" "s3" {
 
   route_table_ids = module.vpc.private_route_table_ids
 }
+
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.us-east-1.logs"
+  vpc_endpoint_type   = "Interface"
+
+  subnet_ids          = module.vpc.private_subnets
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+}
