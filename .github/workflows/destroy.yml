@@ -40,6 +40,7 @@ jobs:
         working-directory: ./infra
         run: |
           terraform init -input=false
+          terraform state rm module.ecs || true
           terraform destroy -auto-approve -input=false \
             -var="container_image=dummy" \
             -var="image_tag=dummy" \
