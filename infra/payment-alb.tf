@@ -48,3 +48,13 @@ module "alb" {
 
   tags = var.common_tags
 }
+
+# resource "aws_apigatewayv2_stage" "default" {
+#   api_id = aws_apigatewayv2_api.this.id
+#   name   = "$default"
+
+#   default_route_settings {
+#     data_trace_enabled = true
+#     detailed_metrics_enabled = true
+#   }
+# }

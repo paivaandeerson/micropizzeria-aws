@@ -27,3 +27,13 @@ resource "aws_lambda_permission" "allow_apigw_lambda" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${module.http_api.apigatewayv2_api_execution_arn}/*/*"
 }
+
+# resource "aws_apigatewayv2_stage" "default" {
+#   api_id = aws_apigatewayv2_api.this.id
+#   name   = "$default"
+
+#   default_route_settings {
+#     data_trace_enabled = true
+#     detailed_metrics_enabled = true
+#   }
+# }

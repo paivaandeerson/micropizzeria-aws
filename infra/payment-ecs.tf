@@ -6,6 +6,7 @@ module "ecs" {
     module.alb
   ]
   cluster_name = "payment-cluster"
+  task_exec_iam_role_name = "ecsTaskExecutionRole"
 
   services = {
     payment = {
@@ -14,6 +15,8 @@ module "ecs" {
 
       desired_count = var.desired_count
       launch_type   = "FARGATE"
+
+      enable_execute_command = true
 
       subnet_ids       = module.vpc.private_subnets
       assign_public_ip = false
@@ -28,8 +31,10 @@ module "ecs" {
 
       container_definitions = {
         payment-api = {
-          image     = var.container_image
+          image                    = var.container_image
           readonly_root_filesystem = false
+          essential                = true
+
           port_mappings = [
             {
               containerPort = var.container_port
@@ -37,7 +42,30 @@ module "ecs" {
               protocol      = "tcp"
             }
           ]
+
+          environment = [
+            {
+              name  = "AWS_XRAY_DAEMON_ADDRESS"
+              value = "127.0.0.1:2000"
+            }
+          ]
         }
+
+        xray-daemon = {
+          image     = "public.ecr.aws/xray/aws-xray-daemon:latest"
+          essential = false
+
+          cpu    = 32
+          memory = 256
+
+          port_mappings = [
+            {
+              containerPort = 2000
+              protocol      = "udp"
+            }
+          ]
+        }
+
       }
     }
      xray-daemon = {
@@ -80,4 +108,9 @@ resource "aws_security_group" "ecs_tasks" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_iam_role_policy_attachment" "xray" {
+  role       = "ecsTaskExecutionRole"
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
