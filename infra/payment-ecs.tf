@@ -41,8 +41,13 @@ module "ecs" {
       }
     }
      xray-daemon = {
-       image = "public.ecr.aws/xray/aws-xray-daemon:latest"
-    
+       image = "public.ecr.aws/xray/aws-xray-daemon:latest"    
+
+       launch_type = "FARGATE"
+     
+       subnet_ids = module.vpc.private_subnets
+     
+       security_group_ids = [aws_security_group.ecs_tasks.id]
        cpu    = 32
        memory = 256
     

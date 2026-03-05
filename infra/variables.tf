@@ -29,7 +29,7 @@ variable "common_tags" {
   type    = map(string)
   default = {
     # Environment = "dev"
-    # Project     = "payment"
+    Project     = "micropizzeria-app"
   }
 }
 
