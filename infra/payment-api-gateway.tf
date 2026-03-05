@@ -8,6 +8,8 @@ module "http_api" {
   create_default_stage = true 
   create_api_domain_name = false
 
+  #to define a contract for the API, we use an OpenAPI specification file.
+  # body = file("${path.module}/openapi.yaml")
   integrations = {
     "POST /v1/payment" = {
       lambda_arn             = module.marketplace-app-bff.lambda_function_arn

@@ -9,7 +9,9 @@ const paymentRepository = new PaymentRepository();
 const adyenService = new AdyenRepository();
 const paymentService = new PaymentService(paymentRepository, adyenService);
 
-// Health Check Endpoint
+//TODO: [npm install swagger-autogen] to generate .yml file from OpenApi, 
+// link it to terraform and then make the Contract in REST api gtw
+
 router.get('/health', (_req: Request, res: Response) => {
   res.status(200).send({
     status: 'OK',
