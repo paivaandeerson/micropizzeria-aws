@@ -1,7 +1,7 @@
 module "ecs" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "~> 5.0"
-
+  depends_on = [module.vpc]
   cluster_name = "payment-cluster"
 
   services = {
