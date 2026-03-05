@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 
 from src.application.exception.bad_request_exception import BadRequestException
@@ -14,6 +15,17 @@ def lambda_handler(event, context):
     
     print("[INFO] method: " + method)
     print("[INFO] path: " + path)
+    
+
+    headers = {
+        "X-Amzn-Trace-Id": os.environ.get("_X_AMZN_TRACE_ID")
+    }
+
+    # response = requests.post(
+    #     self.api_url,
+    #     json=payment_data,
+    #     headers=headers
+    # )
 
     try:        
         match (method, path):

@@ -24,6 +24,15 @@ module "alb" {
       backend_port     = var.container_port
       target_type      = "ip"
       create_attachment = false
+      health_check = {
+        path                = "/health"
+        protocol            = "HTTP"
+        matcher             = "200"
+        interval            = 30
+        timeout             = 5
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+      }
     }
   }
 

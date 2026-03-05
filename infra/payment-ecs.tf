@@ -37,6 +37,19 @@ module "ecs" {
         }
       }
     }
+     xray-daemon = {
+       image = "public.ecr.aws/xray/aws-xray-daemon:latest"
+    
+       cpu    = 32
+       memory = 256
+    
+       port_mappings = [
+         {
+           containerPort = 2000
+           protocol      = "udp"
+         }
+       ]
+     }
   }
 
   tags = var.common_tags

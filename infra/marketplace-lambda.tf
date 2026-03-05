@@ -7,6 +7,8 @@ module "marketplace-app-bff" {
   handler = "src.adapter.inbound.lambda_function.lambda_handler"
   runtime = "python3.11"
 
+  tracing_mode = "Active"
+
   memory_size = 256
   timeout     = 10
 
@@ -22,17 +24,18 @@ module "marketplace-app-bff" {
   create_role = true
   attach_cloudwatch_logs_policy = true
   attach_policies = true
-  number_of_policies = 1
+  number_of_policies = 2
 
   policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
   ]
 
   vpc_subnet_ids         = module.vpc.private_subnets
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
   environment_variables = {
-    PAYMENT_SERVICE_API = "http://${module.alb.dns_name}/payment"
+    PAYMENT_SERVICE_API = "http://${module.alb.dns_name}:3000/api/payment"
   }
   tags = var.common_tags
 }
