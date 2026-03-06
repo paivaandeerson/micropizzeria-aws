@@ -43,8 +43,7 @@ module "marketplace-app-bff" {
 resource "aws_security_group" "lambda_sg" {
   name   = "lambda-sg"
   vpc_id = module.vpc.vpc_id
-  depends_on = [module.marketplace-app-bff]
-  timeouts {
+    timeouts {
     delete = "15m"
   }
 
