@@ -17,6 +17,11 @@ variable "lambda_s3_key" {
   type        = string
 }
 
+variable "ecr_registry" {
+  description = "ECR registry URL"
+  type        = string
+}
+
 variable "container_port" {
   default = 3000
 }

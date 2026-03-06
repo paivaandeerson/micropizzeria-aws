@@ -52,7 +52,7 @@ module "ecs" {
         }
 
         xray-daemon = {
-          image     = "public.ecr.aws/xray/aws-xray-daemon:latest"
+          image     =  "${var.ecr_registry}/aws-xray-daemon:latest"
           essential = false
 
           cpu    = 32

@@ -42,6 +42,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Mirror xray-daemon to private ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker pull public.ecr.aws/xray/aws-xray-daemon:latest
+          docker tag public.ecr.aws/xray/aws-xray-daemon:latest \
+            $ECR_REGISTRY/aws-xray-daemon:latest
+          aws ecr describe-repositories --repository-names aws-xray-daemon 2>/dev/null \
+          || aws ecr create-repository --repository-name aws-xray-daemon
+          docker push $ECR_REGISTRY/aws-xray-daemon:latest  
+
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
