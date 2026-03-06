@@ -33,6 +33,9 @@ jobs:
           python-version: "3.11"
       - uses: hashicorp/setup-terraform@v3
 
+      - name: Empty Artifact Bucket
+        run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
+
       - name: Empty ECR Repository
         run: |
           aws ecr list-images \
@@ -43,6 +46,35 @@ jobs:
           xargs -I{} aws ecr batch-delete-image \
             --repository-name micropizzeria-app \
             --image-ids {} || true
+
+      - name: Delete dangling ENIs
+        run: |
+          ENI_IDS=$(aws ec2 describe-network-interfaces \
+            --region $AWS_REGION \
+            --filters "Name=status,Values=available" \
+                      "Name=description,Values=*payment*" \
+            --query "NetworkInterfaces[*].NetworkInterfaceId" \
+            --output text)
+          for ENI in $ENI_IDS; do
+            echo "Deleting ENI: $ENI"
+            aws ec2 delete-network-interface \
+              --network-interface-id $ENI \
+              --region $AWS_REGION || true
+          done
+
+          # ENIs da Lambda (descrição diferente)
+          ENI_IDS_LAMBDA=$(aws ec2 describe-network-interfaces \
+            --region $AWS_REGION \
+            --filters "Name=status,Values=available" \
+                      "Name=description,Values=*marketplace-app-bff*" \
+            --query "NetworkInterfaces[*].NetworkInterfaceId" \
+            --output text)
+          for ENI in $ENI_IDS_LAMBDA; do
+            echo "Deleting ENI: $ENI"
+            aws ec2 delete-network-interface \
+              --network-interface-id $ENI \
+              --region $AWS_REGION || true
+          done
 
       - name: Terraform Destroy
         working-directory: ./infra
