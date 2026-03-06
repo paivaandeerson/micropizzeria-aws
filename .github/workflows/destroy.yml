@@ -107,6 +107,34 @@ jobs:
               --region $AWS_REGION || true
           done
 
+      - name: Delete orphan Security Groups
+        run: |
+          VPC_ID=$(aws ec2 describe-vpcs \
+            --region $AWS_REGION \
+            --filters "Name=tag:Name,Values=main-vpc" \
+            --query "Vpcs[0].VpcId" \
+            --output text)
+
+          if [ "$VPC_ID" = "None" ] || [ -z "$VPC_ID" ]; then
+            echo "VPC not found, skipping."
+            exit 0
+          fi
+
+          echo "Found VPC: $VPC_ID"
+
+          SG_IDS=$(aws ec2 describe-security-groups \
+            --region $AWS_REGION \
+            --filters "Name=vpc-id,Values=$VPC_ID" \
+            --query "SecurityGroups[?GroupName!='default'].GroupId" \
+            --output text)
+
+          for SG in $SG_IDS; do
+            echo "Deleting SG: $SG"
+            aws ec2 delete-security-group \
+              --group-id $SG \
+              --region $AWS_REGION 2>/dev/null || echo "  ⚠️ SG $SG still has dependencies, skipping."
+          done     
+
       - name: Terraform Destroy
         working-directory: ./infra
         run: |
