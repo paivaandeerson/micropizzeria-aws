@@ -26,15 +26,23 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          
-      - name: Empty Artifact Bucket
-        run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  
+          python-version: "3.11"
       - uses: hashicorp/setup-terraform@v3
+
+      - name: Empty ECR Repository
+        run: |
+          aws ecr list-images \
+            --repository-name micropizzeria-app \
+            --query 'imageIds[*]' \
+            --output json | \
+          jq 'if length > 0 then . else empty end' | \
+          xargs -I{} aws ecr batch-delete-image \
+            --repository-name micropizzeria-app \
+            --image-ids {} || true
 
       - name: Terraform Destroy
         working-directory: ./infra
@@ -45,7 +53,9 @@ jobs:
             -var="container_image=dummy" \
             -var="image_tag=dummy" \
             -var="app_version=dummy" \
-            -var="lambda_s3_key=dummy"
+            -var="lambda_s3_key=dummy" \
+            -var="artifact_bucket=dummy" \
+            -var="environment=production"
 
       - name: Empty Artifact Bucket
         run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
