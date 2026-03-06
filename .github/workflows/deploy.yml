@@ -72,7 +72,8 @@ jobs:
             -var="app_version=${{ github.sha }}" \
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
-            -var="environment=production"
+            -var="environment=production" \
+            -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}"
 
       - name: Build and Push Docker Image   
         env:
@@ -91,7 +92,8 @@ jobs:
             -var="app_version=${{ github.sha }}" \
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
-            -var="environment=production"
+            -var="environment=production" \
+            -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}"
           
 
       - name: Update ECS Service
