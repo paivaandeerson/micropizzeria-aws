@@ -46,6 +46,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          aws ecr-public get-login-password --region us-east-1 \
+            | docker login --username AWS --password-stdin public.ecr.aws
           docker pull public.ecr.aws/xray/aws-xray-daemon:latest
           docker tag public.ecr.aws/xray/aws-xray-daemon:latest \
             $ECR_REGISTRY/aws-xray-daemon:latest
