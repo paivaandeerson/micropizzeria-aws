@@ -67,6 +67,16 @@ module "ecs" {
         }
 
       }
+
+      log_configuration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/payment/payment-api"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+          awslogs-create-group  = "true"
+        }
+      }
     }
   }
 
@@ -117,4 +127,9 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
 resource "aws_iam_role_policy_attachment" "xray" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_cloudwatch" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }

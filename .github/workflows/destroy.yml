@@ -55,7 +55,8 @@ jobs:
             -var="app_version=dummy" \
             -var="lambda_s3_key=dummy" \
             -var="artifact_bucket=dummy" \
-            -var="environment=production"
+            -var="environment=production" \
+            -var="ecr_registry=$ECR_REGISTRY"
 
       - name: Empty Artifact Bucket
         run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
