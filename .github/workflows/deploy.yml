@@ -34,7 +34,7 @@ jobs:
       - name: Ensure Artifact Bucket exists
         run: |
           aws s3api head-bucket --bucket $ARTIFACT_BUCKET 2>/dev/null \
-          || aws s3 mb s3://$ARTIFACT_BUCKET --region $AWS_REGION \          
+          || aws s3 mb s3://$ARTIFACT_BUCKET --region $AWS_REGION \
           aws s3api head-bucket --bucket micropizzeria-infra-state 2>/dev/null \
           || aws s3 mb s3://micropizzeria-infra-state --region $AWS_REGION
 
@@ -54,7 +54,7 @@ jobs:
         run: |
           terraform init -input=false
           terraform apply -auto-approve -input=false \
-            -var="container_image=placeholder" \ 
+            -var="container_image=placeholder" \
             -var="image_tag=placeholder" \
             -var="app_version=${{ github.sha }}" \
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
