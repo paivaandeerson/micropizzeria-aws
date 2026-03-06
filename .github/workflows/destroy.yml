@@ -47,6 +47,37 @@ jobs:
             --repository-name micropizzeria-app \
             --image-ids {} || true
 
+      - name: Stop ECS tasks and wait ENIs release
+        run: |
+          # Para todas as tasks
+          for TASK in $(aws ecs list-tasks \
+            --cluster payment-cluster \
+            --region $AWS_REGION \
+            --query "taskArns[*]" --output text 2>/dev/null); do
+            echo "Stopping task: $TASK"
+            aws ecs stop-task \
+              --cluster payment-cluster \
+              --task $TASK \
+              --region $AWS_REGION > /dev/null
+          done
+
+          # Aguarda até não haver mais ENIs in-use do ECS (timeout 5min)
+          echo "Waiting for ENIs to be released..."
+          for i in $(seq 1 30); do
+            ENI_COUNT=$(aws ec2 describe-network-interfaces \
+              --region $AWS_REGION \
+              --filters "Name=status,Values=in-use" \
+                        "Name=description,Values=*ecs*" \
+              --query "length(NetworkInterfaces)" \
+              --output text)
+            echo "  ENIs still in-use: $ENI_COUNT (attempt $i/30)"
+            if [ "$ENI_COUNT" = "0" ]; then
+              echo "  ✅ All ENIs released."
+              break
+            fi
+            sleep 10
+          done 
+
       - name: Delete dangling ENIs
         run: |
           ENI_IDS=$(aws ec2 describe-network-interfaces \
