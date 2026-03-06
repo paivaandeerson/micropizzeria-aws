@@ -35,6 +35,9 @@ jobs:
         run: |
           aws s3api head-bucket --bucket $ARTIFACT_BUCKET 2>/dev/null \
           || aws s3 mb s3://$ARTIFACT_BUCKET --region $AWS_REGION
+          
+          aws s3api head-bucket --bucket micropizzeria-infra-state 2>/dev/null \
+          || aws s3 mb s3://micropizzeria-infra-state --region $AWS_REGION
 
       - name: Login to Amazon ECR
         id: login-ecr
