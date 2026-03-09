@@ -63,6 +63,14 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
+      - name: Cache Terraform modules and providers
+        uses: actions/cache@v4
+        with:
+          path: infra/.terraform
+          key: terraform-${{ hashFiles('infra/.terraform.lock.hcl') }}
+          restore-keys: |
+            terraform-
+
       - name: Terraform Init and commit lock file
         working-directory: ./infra
         run: |
