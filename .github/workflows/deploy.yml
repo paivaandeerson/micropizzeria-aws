@@ -62,6 +62,16 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
+      - name: Cache Terraform modules and providers
+        uses: actions/cache@v4
+        with:
+          path: |
+            infra/.terraform
+            infra/.terraform.lock.hcl
+          key: terraform-${{ hashFiles('infra/.terraform.lock.hcl') }}
+          restore-keys: |
+            terraform-
+
       - name: Terraform Apply (create infra and ECR repo)   # ← dummy image
         working-directory: ./infra
         run: |
@@ -113,7 +123,7 @@ jobs:
 
           terraform apply -auto-approve -input=false \
             -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
-            -var="image_tag=${{ github.sha }}" \
+                        -var="image_tag=${{ github.sha }}" \
             -var="app_version=${{ github.sha }}" \
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
