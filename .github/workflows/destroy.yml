@@ -171,6 +171,14 @@ jobs:
               --log-group-name $LG \
               --region $AWS_REGION 2>/dev/null || echo "  ⚠️ $LG not found, skipping."
           done    
+          
+      - name: Delete ECS Autoscaling Target
+        run: |
+          aws application-autoscaling deregister-scalable-target \
+            --service-namespace ecs \
+            --resource-id service/payment-cluster/payment \
+            --scalable-dimension ecs:service:DesiredCount \
+            --region $AWS_REGION 2>/dev/null || true    
 
       - name: Terraform Destroy
         working-directory: ./infra
