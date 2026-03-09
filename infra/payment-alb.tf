@@ -45,7 +45,7 @@ module "alb" {
       }
     }
   }
-
+  
   tags = var.common_tags
 }
 

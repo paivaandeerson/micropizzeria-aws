@@ -34,6 +34,16 @@ module "ecs" {
           image                    = var.container_image
           readonly_root_filesystem = false
           essential                = true
+          
+          log_configuration = {
+            logDriver = "awslogs"
+            options = {
+              awslogs-group         = "/ecs/payment/payment-api"
+              awslogs-region        = var.aws_region
+              awslogs-stream-prefix = "ecs"
+              awslogs-create-group  = "true"
+            }
+          }
 
           port_mappings = [
             {
@@ -58,6 +68,16 @@ module "ecs" {
           cpu    = 32
           memory = 256
 
+          log_configuration = {
+            logDriver = "awslogs"
+            options = {
+              awslogs-group         = "/ecs/payment/xray-daemon"
+              awslogs-region        = var.aws_region
+              awslogs-stream-prefix = "ecs"
+              awslogs-create-group  = "true"
+            }
+          }
+
           port_mappings = [
             {
               containerPort = 2000
@@ -66,16 +86,6 @@ module "ecs" {
           ]
         }
 
-      }
-
-      log_configuration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-group         = "/ecs/payment/payment-api"
-          awslogs-region        = var.aws_region
-          awslogs-stream-prefix = "ecs"
-          awslogs-create-group  = "true"
-        }
       }
     }
   }

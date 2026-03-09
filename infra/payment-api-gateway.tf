@@ -8,6 +8,14 @@ module "http_api" {
   create_default_stage = true 
   create_api_domain_name = false
 
+  default_stage_access_log_destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+
+  default_route_settings = {
+    detailed_metrics_enabled = true
+    throttling_burst_limit   = 100
+    throttling_rate_limit    = 50
+  }
+
   #to define a contract for the API, we use an OpenAPI specification file.
   # body = file("${path.module}/openapi.yaml")
   integrations = {
@@ -28,12 +36,8 @@ resource "aws_lambda_permission" "allow_apigw_lambda" {
   source_arn    = "${module.http_api.apigatewayv2_api_execution_arn}/*/*"
 }
 
-# resource "aws_apigatewayv2_stage" "default" {
-#   api_id = aws_apigatewayv2_api.this.id
-#   name   = "$default"
-
-#   default_route_settings {
-#     data_trace_enabled = true
-#     detailed_metrics_enabled = true
-#   }
-# }
+resource "aws_cloudwatch_log_group" "api_gateway" {
+  name              = "/aws/apigateway/payment-api-${var.environment}"
+  retention_in_days = 7
+  tags              = var.common_tags
+}

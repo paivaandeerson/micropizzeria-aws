@@ -36,20 +36,33 @@ jobs:
       - name: Empty Artifact Bucket
         run: aws s3 rm s3://$ARTIFACT_BUCKET --recursive || true
 
-      - name: Empty ECR Repository
+      - name: Empty and delete ECR Repositories
         run: |
-          aws ecr list-images \
-            --repository-name micropizzeria-app \
-            --query 'imageIds[*]' \
-            --output json | \
-          jq 'if length > 0 then . else empty end' | \
-          xargs -I{} aws ecr batch-delete-image \
-            --repository-name micropizzeria-app \
-            --image-ids {} || true
+          for REPO in micropizzeria-app aws-xray-daemon; do
+            echo "Processing ECR repo: $REPO"
+            IMAGE_IDS=$(aws ecr list-images \
+              --repository-name $REPO \
+              --region $AWS_REGION \
+              --query 'imageIds[*]' \
+              --output json 2>/dev/null)
+
+            if [ "$IMAGE_IDS" != "[]" ] && [ -n "$IMAGE_IDS" ]; then
+              echo "  → Deleting images from $REPO..."
+              aws ecr batch-delete-image \
+                --repository-name $REPO \
+                --image-ids "$IMAGE_IDS" \
+                --region $AWS_REGION > /dev/null
+            fi
+
+            aws ecr delete-repository \
+              --repository-name $REPO \
+              --force \
+              --region $AWS_REGION 2>/dev/null \
+              && echo "  ✅ $REPO deleted." || echo "  ⚠️ $REPO not found, skipping."
+          done      
 
       - name: Stop ECS tasks and wait ENIs release
-        run: |
-          # Para todas as tasks
+        run: |          
           for TASK in $(aws ecs list-tasks \
             --cluster payment-cluster \
             --region $AWS_REGION \
@@ -61,7 +74,7 @@ jobs:
               --region $AWS_REGION > /dev/null
           done
 
-          # Aguarda até não haver mais ENIs in-use do ECS (timeout 5min)
+          ENIs in-use do ECS (timeout 5min)
           echo "Waiting for ENIs to be released..."
           for i in $(seq 1 30); do
             ENI_COUNT=$(aws ec2 describe-network-interfaces \
@@ -93,7 +106,7 @@ jobs:
               --region $AWS_REGION || true
           done
 
-          # ENIs da Lambda (descrição diferente)
+          # ENIs da Lambda 
           ENI_IDS_LAMBDA=$(aws ec2 describe-network-interfaces \
             --region $AWS_REGION \
             --filters "Name=status,Values=available" \
