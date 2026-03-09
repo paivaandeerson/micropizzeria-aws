@@ -85,15 +85,11 @@ jobs:
         working-directory: ./infra
         run: |
           terraform init -input=false
-          terraform import \
-            'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment-cluster 2>/dev/null || true
-          terraform import \
-            'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment/payment-api 2>/dev/null || true
-          terraform import \
-            'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment/xray-daemon 2>/dev/null || true
+
+          terraform import 'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' /aws/ecs/payment-cluster 2>/dev/null; true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/payment-api 2>/dev/null; true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/xray-daemon 2>/dev/null; true
+
           terraform apply -auto-approve -input=false \
             -var="container_image=placeholder" \
             -var="image_tag=placeholder" \
