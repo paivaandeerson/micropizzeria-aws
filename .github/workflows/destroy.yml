@@ -146,6 +146,18 @@ jobs:
             aws ec2 delete-security-group \
               --group-id $SG \
               --region $AWS_REGION 2>/dev/null || echo "  ⚠️ SG $SG still has dependencies, skipping."
+          done    
+
+      - name: Delete ECS Log Groups
+        run: |
+          for LG in \
+            /aws/ecs/payment-cluster \
+            /aws/ecs/payment/payment-api \
+            /aws/ecs/payment/xray-daemon; do
+            echo "Deleting log group: $LG"
+            aws logs delete-log-group \
+              --log-group-name $LG \
+              --region $AWS_REGION 2>/dev/null || echo "  ⚠️ $LG not found, skipping."
           done     
 
       - name: Terraform Destroy
