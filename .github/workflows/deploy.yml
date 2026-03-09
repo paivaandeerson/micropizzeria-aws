@@ -76,9 +76,7 @@ jobs:
       - name: Cache Terraform modules and providers
         uses: actions/cache@v4
         with:
-          path: |
-            infra/.terraform
-            infra/.terraform.lock.hcl
+          path: infra/.terraform
           key: terraform-${{ hashFiles('infra/.terraform.lock.hcl') }}
           restore-keys: |
             terraform-
@@ -86,18 +84,16 @@ jobs:
       - name: Terraform Apply (create infra and ECR repo)
         working-directory: ./infra
         run: |
+          terraform init -input=false
           terraform import \
             'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment-cluster 2>/dev/null || true
-
           terraform import \
             'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment/payment-api 2>/dev/null || true
-
           terraform import \
             'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment/xray-daemon 2>/dev/null || true
-
           terraform apply -auto-approve -input=false \
             -var="container_image=placeholder" \
             -var="image_tag=placeholder" \
@@ -107,7 +103,7 @@ jobs:
             -var="environment=production" \
             -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}"
 
-      - name: Build and Push Docker Image   
+      - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         working-directory: ./payment
@@ -115,21 +111,19 @@ jobs:
           docker build -t $ECR_REGISTRY/$APP_NAME:${{ github.sha }} .
           docker push $ECR_REGISTRY/$APP_NAME:${{ github.sha }}
 
-      - name: Terraform Apply (update image)   # ←  real image
+      - name: Terraform Apply (update image)
         working-directory: ./infra
-        run: |        
+        run: |
+          terraform init -input=false
           terraform import \
             'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment-cluster 2>/dev/null || true
-
           terraform import \
             'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment/payment-api 2>/dev/null || true
-
           terraform import \
             'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' \
             /aws/ecs/payment/xray-daemon 2>/dev/null || true
-
           terraform apply -auto-approve -input=false \
             -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
             -var="image_tag=${{ github.sha }}" \
@@ -138,7 +132,6 @@ jobs:
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
             -var="environment=production" \
             -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}"
-          
 
       - name: Update ECS Service
         run: echo "ECS service update is handled by Terraform (image set via var.container_image)."
