@@ -9,7 +9,7 @@ permissions:
 
 env:
   AWS_REGION: "us-east-1"
-  ARTIFACT_BUCKET: "micropizzeria-artifacts"
+  ARTIFACT_BUCKET: "micropizzeria-artifacts"  
 
 jobs:
   destroy:
@@ -59,7 +59,20 @@ jobs:
               --force \
               --region $AWS_REGION 2>/dev/null \
               && echo "  ✅ $REPO deleted." || echo "  ⚠️ $REPO not found, skipping."
-          done      
+          done
+
+      - name: Delete ECS Service
+        run: |
+          aws ecs update-service \
+            --cluster payment-cluster \
+            --service payment \
+            --desired-count 0 \
+            --region $AWS_REGION 2>/dev/null || true
+          aws ecs delete-service \
+            --cluster payment-cluster \
+            --service payment \
+            --force \
+            --region $AWS_REGION 2>/dev/null || true     
 
       - name: Stop ECS tasks and wait ENIs release
         run: |          
@@ -73,8 +86,7 @@ jobs:
               --task $TASK \
               --region $AWS_REGION > /dev/null
           done
-
-          ENIs in-use do ECS (timeout 5min)
+          
           echo "Waiting for ENIs to be released..."
           for i in $(seq 1 30); do
             ENI_COUNT=$(aws ec2 describe-network-interfaces \
@@ -158,19 +170,19 @@ jobs:
             aws logs delete-log-group \
               --log-group-name $LG \
               --region $AWS_REGION 2>/dev/null || echo "  ⚠️ $LG not found, skipping."
-          done     
+          done    
 
       - name: Terraform Destroy
         working-directory: ./infra
         run: |
+          ECR_REGISTRY=$(aws sts get-caller-identity --query Account --output text).dkr.ecr.$AWS_REGION.amazonaws.com
           terraform init -input=false
-          terraform state rm module.ecs || true
           terraform destroy -auto-approve -input=false \
             -var="container_image=dummy" \
             -var="image_tag=dummy" \
             -var="app_version=dummy" \
             -var="lambda_s3_key=dummy" \
-            -var="artifact_bucket=dummy" \
+            -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
             -var="environment=production" \
             -var="ecr_registry=$ECR_REGISTRY"
 
