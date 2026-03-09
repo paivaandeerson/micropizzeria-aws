@@ -65,15 +65,15 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Cache Terraform modules and providers
+      - name: Cache Terraform
+        id: cache-terraform
         uses: actions/cache@v4
         with:
           path: infra/.terraform
           key: terraform-${{ hashFiles('infra/.terraform.lock.hcl') }}
-          restore-keys: |
-            terraform-
+          restore-keys: terraform-
 
-      - name: Terraform Init and commit lock file
+      - name: Terraform Init
         working-directory: ./infra
         run: |
           terraform init -input=false
@@ -83,22 +83,14 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update terraform lock file"
           git push || true
 
-      - name: Cache Terraform modules and providers
-        uses: actions/cache@v4
-        with:
-          path: infra/.terraform
-          key: terraform-${{ hashFiles('infra/.terraform.lock.hcl') }}
-          restore-keys: |
-            terraform-
-
       - name: Terraform Apply (create infra and ECR repo)
         working-directory: ./infra
         run: |
           terraform init -input=false
-
-          terraform import 'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' /aws/ecs/payment-cluster 2>/dev/null; true
-          terraform import 'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/payment-api 2>/dev/null; true
-          terraform import 'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/xray-daemon 2>/dev/null; true
+          
+          terraform import 'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' /aws/ecs/payment-cluster 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/payment-api 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/xray-daemon 2>&1 || true
 
           terraform apply -auto-approve -input=false \
             -var="container_image=placeholder" \
@@ -107,7 +99,7 @@ jobs:
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
             -var="environment=production" \
-            -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}"
+            -var="ecr_registry=${{ steps.login-ecr.outputs.registry }}" 2>&1
 
       - name: Build and Push Docker Image
         env:
