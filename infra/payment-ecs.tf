@@ -57,16 +57,6 @@ module "ecs" {
           cpu    = 32
           memory = 256
 
-          log_configuration = {
-            logDriver = "awslogs"
-            options = {
-              awslogs-group         = "/ecs/payment/xray-daemon"
-              awslogs-region        = var.aws_region
-              awslogs-stream-prefix = "ecs"
-              awslogs-create-group  = "true"
-            }
-          }
-
           port_mappings = [
             {
               containerPort = 2000
