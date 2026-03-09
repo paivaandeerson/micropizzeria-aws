@@ -123,7 +123,7 @@ jobs:
 
           terraform apply -auto-approve -input=false \
             -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
-                        -var="image_tag=${{ github.sha }}" \
+            -var="image_tag=${{ github.sha }}" \
             -var="app_version=${{ github.sha }}" \
             -var="lambda_s3_key=marketplace-app-bff/${{ github.sha }}.zip" \
             -var="artifact_bucket=${{ env.ARTIFACT_BUCKET }}" \
