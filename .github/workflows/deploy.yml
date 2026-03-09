@@ -116,15 +116,12 @@ jobs:
         working-directory: ./infra
         run: |
           terraform init -input=false
-          terraform import \
-            'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment-cluster 2>/dev/null || true
-          terraform import \
-            'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment/payment-api 2>/dev/null || true
-          terraform import \
-            'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' \
-            /aws/ecs/payment/xray-daemon 2>/dev/null || true
+          terraform import 'module.ecs.module.cluster.aws_cloudwatch_log_group.this[0]' /aws/ecs/payment-cluster 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["payment-api"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/payment-api 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].module.container_definition["xray-daemon"].aws_cloudwatch_log_group.this[0]' /aws/ecs/payment/xray-daemon 2>&1 || true
+          terraform import 'module.ecs.module.cluster.aws_ecs_cluster.this[0]' payment-cluster 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].aws_ecs_service.this[0]' payment-cluster/payment 2>&1 || true
+          terraform import 'module.ecs.module.service["payment"].aws_appautoscaling_target.this[0]' service/payment-cluster/payment 2>&1 || true
           terraform apply -auto-approve -input=false \
             -var="container_image=${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}:${{ github.sha }}" \
             -var="image_tag=${{ github.sha }}" \
