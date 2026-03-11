@@ -17,6 +17,7 @@ module "ecs" {
       launch_type   = "FARGATE"
 
       enable_execute_command = true
+      task_iam_role_arn = aws_iam_role.ecs_task_role.arn
 
       subnet_ids       = module.vpc.private_subnets
       assign_public_ip = false
@@ -89,6 +90,23 @@ resource "aws_security_group" "ecs_tasks" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecsTaskRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "task_role_xray" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {

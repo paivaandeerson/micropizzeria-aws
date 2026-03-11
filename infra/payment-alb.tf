@@ -25,7 +25,7 @@ module "alb" {
       target_type      = "ip"
       create_attachment = false
       health_check = {
-        path                = "/health"
+        path                = "/api/health"
         protocol            = "HTTP"
         matcher             = "200"
         interval            = 30
