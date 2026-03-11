@@ -2,7 +2,7 @@ module "http_api" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "~> 2.0"
 
-  name          = "payment-api-${var.environment}"
+  name          = "marketplace-api-gtw-${var.environment}"
   protocol_type = "HTTP"
 
   create_default_stage = true 
@@ -37,7 +37,7 @@ resource "aws_lambda_permission" "allow_apigw_lambda" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name              = "/aws/apigateway/payment-api-${var.environment}"
+  name              = "/aws/apigateway/marketplace-api-gtw-${var.environment}"
   retention_in_days = 7
   tags              = var.common_tags
 }

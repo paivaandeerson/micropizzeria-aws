@@ -35,7 +35,7 @@ module "marketplace-app-bff" {
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
   environment_variables = {
-    PAYMENT_SERVICE_API = "http://${module.alb.dns_name}:3000/api/payment"
+    PAYMENT_SERVICE_API = "http://${module.alb.dns_name}/api/payment"
   }
   tags = var.common_tags
 }
