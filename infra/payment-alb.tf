@@ -27,7 +27,7 @@ module "alb" {
       health_check = {
         path                = "/api/health"
         protocol            = "HTTP"
-        matcher             = "200"
+        matcher             = "200,405"
         interval            = 30
         timeout             = 5
         healthy_threshold   = 2
